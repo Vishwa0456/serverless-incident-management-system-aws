@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Incident Management Dashboard</h1>
+    </header>
+
+    <div class="container">
+        <div class="top-actions">
+            <h2>All Incidents</h2>
+            <a href="create-incident.html" class="btn">Create Incident</a>
+        </div>
+
+        <div id="messageBox"></div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Incident ID</th>
+                    <th>Title</th>
+                    <th>Severity</th>
+                    <th>Status</th>
+                    <th>Assigned To</th>
+                    <th>Created At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="incidentTableBody">
+                <tr>
+                    <td colspan="7">Loading incidents...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        async function loadIncidents() {
+            const tableBody = document.getElementById("incidentTableBody");
+            const messageBox = document.getElementById("messageBox");
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/incidents`);
+                const incidents = await response.json();
+
+                tableBody.innerHTML = "";
+
+                if (!incidents || incidents.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="7">No incidents found.</td></tr>`;
+                    return;
+                }
+
+                incidents.forEach(incident => {
+                    const row = document.createElement("tr");
+
+                    row.innerHTML = `
+                        <td>${incident.incidentId}</td>
+                        <td>${incident.title}</td>
+                        <td><span class="${getSeverityBadgeClass(incident.severity)}">${incident.severity}</span></td>
+                        <td>${incident.status}</td>
+                        <td>${incident.assignedTo}</td>
+                        <td>${incident.createdAt}</td>
+                        <td>
+                            <a class="btn" href="incident-details.html?id=${incident.incidentId}">View</a>
+                        </td>
+                    `;
+
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error(error);
+                messageBox.innerHTML = `<div class="message error">Failed to load incidents.</div>`;
+                tableBody.innerHTML = `<tr><td colspan="7">Error loading incidents.</td></tr>`;
+            }
+        }
+
+        loadIncidents();
+    </script>
+</body>
+</html>

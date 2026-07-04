@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Details</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Incident Details</h1>
+    </header>
+
+    <div class="container">
+        <div class="top-actions">
+            <h2>Incident Details</h2>
+            <a href="index.html" class="btn">Back to Dashboard</a>
+        </div>
+
+        <div id="messageBox"></div>
+
+        <div id="incidentDetails" class="card">
+            Loading incident details...
+        </div>
+
+        <h3 class="section-title">Update Status</h3>
+        <form id="statusForm">
+            <div>
+                <label for="status">Status</label>
+                <select id="status" required>
+                    <option value="">Select status</option>
+                    <option value="Open">Open</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                    <option value="Closed">Closed</option>
+                </select>
+            </div>
+
+            <button type="submit">Update Status</button>
+        </form>
+
+        <h3 class="section-title">Assign Incident</h3>
+        <form id="assignForm">
+            <div>
+                <label for="assignedTo">Assign To</label>
+                <input type="text" id="assignedTo" required>
+            </div>
+
+            <button type="submit">Assign Incident</button>
+        </form>
+
+        <h3 class="section-title">Activity History</h3>
+        <div id="activityList" class="card">
+            Loading activity...
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const incidentId = params.get("id");
+
+        async function loadIncidentDetails() {
+            const detailsBox = document.getElementById("incidentDetails");
+            const activityList = document.getElementById("activityList");
+            const messageBox = document.getElementById("messageBox");
+
+            if (!incidentId) {
+                detailsBox.innerHTML = "No incident ID provided.";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    detailsBox.innerHTML = "Failed to load incident.";
+                    return;
+                }
+
+                const incident = data.incident;
+                const activity = data.activity || [];
+
+                detailsBox.innerHTML = `
+                    <p><strong>Incident ID:</strong> ${incident.incidentId}</p>
+                    <p><strong>Title:</strong> ${incident.title}</p>
+                    <p><strong>Description:</strong> ${incident.description}</p>
+                    <p><strong>Severity:</strong> ${incident.severity}</p>
+                    <p><strong>Category:</strong> ${incident.category}</p>
+                    <p><strong>Status:</strong> ${incident.status}</p>
+                    <p><strong>Assigned To:</strong> ${incident.assignedTo}</p>
+                    <p><strong>Created By:</strong> ${incident.createdBy}</p>
+                    <p><strong>Created At:</strong> ${incident.createdAt}</p>
+                    <p><strong>Updated At:</strong> ${incident.updatedAt}</p>
+                    <p><strong>SLA Deadline:</strong> ${incident.slaDeadline}</p>
+                `;
+
+                document.getElementById("status").value = incident.status;
+                document.getElementById("assignedTo").value = incident.assignedTo === "Unassigned" ? "" : incident.assignedTo;
+
+                if (activity.length === 0) {
+                    activityList.innerHTML = "No activity found.";
+                } else {
+                    activityList.innerHTML = activity.map(item => `
+                        <div class="activity-item">
+                            <p><strong>${item.actionType}</strong></p>
+                            <p>${item.details}</p>
+                            <p><small>By: ${item.actionBy} | Time: ${item.actionTime}</small></p>
+                        </div>
+                    `).join("");
+                }
+
+            } catch (error) {
+                console.error(error);
+                messageBox.innerHTML = `<div class="message error">Failed to load incident details.</div>`;
+            }
+        }
+
+        document.getElementById("statusForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const messageBox = document.getElementById("messageBox");
+            const payload = {
+                status: document.getElementById("status").value,
+                actionBy: "Vishwanath"
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}/status`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageBox.innerHTML = `<div class="message success">Status updated successfully.</div>`;
+                    loadIncidentDetails();
+                } else {
+                    messageBox.innerHTML = `<div class="message error">${data.message || "Failed to update status."}</div>`;
+                }
+            } catch (error) {
+                console.error(error);
+                messageBox.innerHTML = `<div class="message error">Error updating status.</div>`;
+            }
+        });
+
+        document.getElementById("assignForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const messageBox = document.getElementById("messageBox");
+            const payload = {
+                assignedTo: document.getElementById("assignedTo").value,
+                actionBy: "Vishwanath"
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}/assign`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageBox.innerHTML = `<div class="message success">Incident assigned successfully.</div>`;
+                    loadIncidentDetails();
+                } else {
+                    messageBox.innerHTML = `<div class="message error">${data.message || "Failed to assign incident."}</div>`;
+                }
+            } catch (error) {
+                console.error(error);
+                messageBox.innerHTML = `<div class="message error">Error assigning incident.</div>`;
+            }
+        });
+
+        loadIncidentDetails();
+    </script>
+</body>
+</html>

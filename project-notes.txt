@@ -12,3 +12,7 @@ incident-portal-frontend
 
 IAM Role:
 IncidentManagementLambdaRole
+
+API Gateway:
+IncidentManagementAPI
+Invoke URL: https://8t2pmq5a6c.execute-api.ap-south-1.amazonaws.com/

@@ -1,0 +1,14 @@
+1. Incidents
+   Partition Key: incidentId (String)
+2. IncidentActivity
+   Partition Key: activityId (String)
+
+SNS Topic:
+incident-alerts-topic
+ARN: arn:aws:sns:ap-south-1:594474086249:incident-alerts-topic
+
+S3 Frontend Bucket:
+incident-portal-frontend
+
+IAM Role:
+IncidentManagementLambdaRole

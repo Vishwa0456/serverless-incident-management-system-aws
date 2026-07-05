@@ -271,6 +271,17 @@ This project provided hands-on experience with:
 
 ---
 
+## Screenshots
+
+### Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+### Create Incident
+![Create Incident](screenshots/create-incident.png)
+
+### Incident Details
+![Incident Details](screenshots/incident-details.png)
+
 ## Future Improvements
 
 Possible production enhancements include:

@@ -42,8 +42,6 @@ The frontend is hosted on Amazon S3 as a static website, while backend APIs are 
 ### Scheduling / Automation
 - **Amazon EventBridge Scheduler** – Invokes escalation checks periodically for SLA breach detection
 
-### Monitoring / Debugging
-- **Amazon CloudWatch Logs** – Used to monitor Lambda executions and troubleshoot failures
 
 ---
 
@@ -86,7 +84,6 @@ The frontend is hosted on Amazon S3 as a static website, while backend APIs are 
 - Amazon DynamoDB
 - Amazon SNS
 - Amazon EventBridge Scheduler
-- Amazon CloudWatch Logs
 - AWS IAM
 
 ---
@@ -223,7 +220,6 @@ The project was deployed in a serverless architecture using the following AWS se
 - DynamoDB used for storing incidents and activity history
 - SNS used for notifications and escalation alerts
 - EventBridge Scheduler used to trigger periodic SLA escalation checks
-- CloudWatch Logs used for Lambda monitoring and troubleshooting
 
 ---
 
@@ -256,7 +252,6 @@ This project provided hands-on experience with:
 - Hosting static frontend applications on Amazon S3
 - Implementing automated background checks using EventBridge Scheduler
 - Sending notifications with SNS
-- Using CloudWatch Logs for debugging and monitoring
 
 ---
 
